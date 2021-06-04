@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lt.insoft.gallery.application.ResourceNotFoundException;
@@ -41,7 +41,7 @@ public class TagService {
         return tagRepository.findAll().stream().map(x -> new TagDTO(x.getId(), x.getText())).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TagDTO> getImageTags(Long imageId) {
         // @formatter:off
         return imageDbRepository.findById(imageId)
@@ -57,12 +57,7 @@ public class TagService {
     public void removeTags(Long imageId, List<String> tagsToRemove) {
         ImageEntity image = imageDbRepository.findById(imageId).orElseThrow(() -> new ResourceNotFoundException(ImageEntity.class, "imageId", imageId.toString()));
         for (String tag : tagsToRemove) {
-            TagEntity tagFromDb = tagRepository.findFirstByText(tag);
-            if (tagFromDb == null) {
-                throw new ResourceNotFoundException(TagEntity.class, "Tag text", tag);
-            }
-            image.getTags().remove(tagFromDb);
+            image.getTags().removeIf(tagEntity -> (tagEntity.getText().equals(tag)));
         }
-
     }
 }

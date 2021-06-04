@@ -14,16 +14,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
+
 
 import org.imgscalr.Scalr;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import lt.insoft.gallery.application.InternalException;
 import lt.insoft.gallery.application.ParameterFormatException;
 import lt.insoft.gallery.application.ResourceNotFoundException;
 import lt.insoft.gallery.domain.tag.TagService;
@@ -35,10 +37,11 @@ public class ImageService {
     private final ImageDbRepository imageDbRepository;
     private final TagService tagService;
 
+    @Transactional
     public Long uploadImage(MultipartFile image, ImageAddDTO imageAddDto) {
         LocalDate parsedDate;
         try {
-            parsedDate = LocalDate.parse(imageAddDto.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            parsedDate = LocalDate.parse(imageAddDto.getDate());
         } catch (DateTimeParseException ex) {
             throw new ParameterFormatException("Date", imageAddDto.getDate(), "yyyy-MM-dd");
         }
@@ -53,14 +56,14 @@ public class ImageService {
             imageToSave = ImageEntity
                 .builder()
                 .content(image.getBytes())
-                .name(image.getOriginalFilename())
+                .name(imageAddDto.getName())
                 .date(parsedDate)
                 .description(imageAddDto.getDescription())
                 .tags(new HashSet<>())
                 .build();
             // @formatter:on
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Could not get bytes from image file");
+            throw new InternalException("Could not get bytes from image file " + image.getOriginalFilename() + "\n" + e.getMessage());
         }
 
         Long id = imageDbRepository.save(imageToSave).getId();
@@ -87,6 +90,7 @@ public class ImageService {
                 .content(image.getContent())
                 .date(image.getDate())
                 .description(image.getDescription())
+                .name(image.getName())
                 .tags(tagService.getImageTags(imageId))
                 .build();
         // @formatter:on
@@ -100,9 +104,8 @@ public class ImageService {
     }
 
     @Transactional
-    public void modifyImage(Long imageId, ImageModifyDTO imageModifyDTO, MultipartFile imageFromClient) {
-        ImageEntity image = imageDbRepository.findById(imageId)
-                .orElseThrow(() -> new ResourceNotFoundException(ImageEntity.class, "imageId", imageId.toString()));
+    public void modifyImage(Long imageId, ImageAddDTO imageModifyDTO, MultipartFile imageFromClient) {
+        ImageEntity image = imageDbRepository.findById(imageId).orElseThrow(() -> new ResourceNotFoundException(ImageEntity.class, "imageId", imageId.toString()));
         if (imageModifyDTO.getDate() != null) {
             LocalDate parsedDate;
             try {
@@ -126,8 +129,12 @@ public class ImageService {
             try {
                 image.setContent(imageFromClient.getBytes());
             } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Could not get bytes from image file");
+                throw new InternalException("Could not get bytes from image file\n" + e.getMessage());
             }
+        }
+        if (imageModifyDTO.getTags() != null)
+        {
+            tagService.addTags(imageId, imageModifyDTO.getTags());
         }
 
     }
@@ -135,13 +142,7 @@ public class ImageService {
     public List<ImageResposeDTO> getImages(String searchParams) {
         List<ImageEntity> images = imageDbRepository.findAll();
         if (searchParams != null && !searchParams.isEmpty()) {
-            // @formatter:off
-            images = imageDbRepository
-                    .findAll(Specification.where(ImageSpecification.search(searchParams)));
-                    // .stream()
-                    // .distinct()
-                    // .collect(Collectors.toList());
-         //   @formatter:on
+            images = imageDbRepository.findAll(Specification.where(ImageSpecification.search(searchParams)));
         }
         // @formatter:off
         return images.stream()
@@ -163,14 +164,13 @@ public class ImageService {
         BufferedImage imagetoResize;
         try (InputStream is = new ByteArrayInputStream(image); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             imagetoResize = ImageIO.read(is);
-            imagetoResize = Scalr.resize(imagetoResize, Scalr.Method.SPEED, 150);
-            ImageIO.write(imagetoResize, "jpeg", baos);
+            imagetoResize = Scalr.resize(imagetoResize, Scalr.Method.SPEED, 300);
+            ImageIO.write(imagetoResize, "png", baos);
             return baos.toByteArray();
         } catch (IOException | IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Scaler thinks given bytes do not form an image!");
+            throw new InternalException("Scaler thinks given bytes do not form an image!\n" + e.getMessage());
         }
 
     }
-
 
 }

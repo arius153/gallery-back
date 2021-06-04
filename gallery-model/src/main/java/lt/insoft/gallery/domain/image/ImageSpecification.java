@@ -7,22 +7,25 @@ import javax.persistence.criteria.Subquery;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lt.insoft.gallery.domain.tag.TagEntity_;
 
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageSpecification {
 
     static Specification<ImageEntity> search(String searchText) {
         return (image, cq, cb) -> {
-            Predicate forDescription = cb.like(cb.lower(image.get("description")), "%" + searchText.toLowerCase() + "%");
-            Predicate forDate = cb.like(image.get("date").as(String.class), "%" + searchText.toLowerCase() + "%");
-            Predicate forName = cb.like(cb.lower(image.get("name")), "%" + searchText.toLowerCase() + "%");
-            Predicate forId = cb.like(image.get("id").as(String.class), "%" + searchText.toLowerCase() + "%");
+
+            Predicate forDescription = cb.like(cb.lower(image.get(ImageEntity_.description)), "%" + searchText.toLowerCase() + "%");
+            Predicate forDate = cb.like(image.get(ImageEntity_.date).as(String.class), "%" + searchText.toLowerCase() + "%");
+            Predicate forName = cb.like(cb.lower(image.get(ImageEntity_.name)), "%" + searchText.toLowerCase() + "%");
+            Predicate forId = cb.like(image.get(ImageEntity_.id).as(String.class), "%" + searchText.toLowerCase() + "%");
 
             Subquery<ImageEntity> subquery = cq.subquery(ImageEntity.class);
             Root<ImageEntity> subImage = subquery.from(ImageEntity.class);
-            subquery.select(subImage).where(cb.like(cb.lower(subImage.join("tags", JoinType.LEFT).get("text")), "%" + searchText.toLowerCase() + "%"));
-            Predicate forTagsV2 = image.get("id").in(subquery);
+            subquery.select(subImage).where(cb.like(cb.lower(subImage.join(ImageEntity_.tags, JoinType.LEFT).get(TagEntity_.text)), "%" + searchText.toLowerCase() + "%"));
+            Predicate forTagsV2 = image.get(ImageEntity_.id).in(subquery);
 
             return cb.or(forDescription, forDate, forName, forId, forTagsV2);
         };

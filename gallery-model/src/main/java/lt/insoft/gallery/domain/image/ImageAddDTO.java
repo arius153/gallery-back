@@ -12,6 +12,7 @@ import lombok.ToString;
 @Builder
 @ToString
 public class ImageAddDTO {
+    private final String name;
     private final String date;
     private final String description;
     private final List<String> tags;

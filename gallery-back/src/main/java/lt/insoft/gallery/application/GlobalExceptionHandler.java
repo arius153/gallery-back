@@ -1,9 +1,9 @@
 package lt.insoft.gallery.application;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
-import org.apache.tomcat.jni.Local;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,17 +25,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ParameterFormatException.class)
     public ResponseEntity<ExceptionResponse> parameterIsWrong(ParameterFormatException ex)
     {
-        // @formatter:off
         ExceptionResponse response = new ExceptionResponse();
         response.setErrorMessage(ex.getMessage());
-        response.setErrorCode("Bad_REQUEST");
+        response.setErrorCode("BAD_REQUEST");
         response.setTimestamp(LocalDateTime.now());
-                // .builder()
-                // .errorCode("BAD_REQUEST")
-                // .errorMessage(ex.getMessage())
-                // .timestamp(LocalDateTime.now())
-                // .build();
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        // @formatter:on
+    }
+
+    @ExceptionHandler(InternalException.class)
+    public ResponseEntity<ExceptionResponse> internalFail(InternalException ex)
+    {
+        ExceptionResponse response = new ExceptionResponse();
+        response.setErrorMessage(ex.getMessage());
+        response.setErrorCode("FORBIDDEN");
+        response.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 }
