@@ -16,10 +16,10 @@ import lt.insoft.gallery.domain.user.UserEntity;
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
-    private Long id;
-    private String username;
-    private String password;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(UserEntity user)
     {

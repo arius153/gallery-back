@@ -36,10 +36,10 @@ public class TagService {
         }
     }
 
-    public List<TagDTO> getTags()
-    {
-        return tagRepository.findAll().stream().map(x -> new TagDTO(x.getId(), x.getText())).collect(Collectors.toList());
-    }
+    // public List<TagDTO> getTags()
+    // {
+    //     return tagRepository.findAll().stream().map(x -> new TagDTO(x.getId(), x.getText())).collect(Collectors.toList());
+    // }
 
     @Transactional(readOnly = true)
     public List<TagDTO> getImageTags(Long imageId) {
@@ -53,11 +53,11 @@ public class TagService {
         // @formatter:on
     }
 
-    @Transactional
-    public void removeTags(Long imageId, List<String> tagsToRemove) {
-        ImageEntity image = imageDbRepository.findById(imageId).orElseThrow(() -> new ResourceNotFoundException(ImageEntity.class, "imageId", imageId.toString()));
-        for (String tag : tagsToRemove) {
-            image.getTags().removeIf(tagEntity -> (tagEntity.getText().equals(tag)));
-        }
-    }
+    // @Transactional
+    // public void removeTags(Long imageId, List<String> tagsToRemove) {
+    //     ImageEntity image = imageDbRepository.findById(imageId).orElseThrow(() -> new ResourceNotFoundException(ImageEntity.class, "imageId", imageId.toString()));
+    //     for (String tag : tagsToRemove) {
+    //         image.getTags().removeIf(tagEntity -> (tagEntity.getText().equals(tag)));
+    //     }
+    // }
 }
