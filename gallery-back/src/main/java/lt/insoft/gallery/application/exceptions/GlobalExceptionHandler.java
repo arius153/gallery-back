@@ -1,4 +1,4 @@
-package lt.insoft.gallery.application;
+package lt.insoft.gallery.application.exceptions;
 
 
 import java.time.LocalDateTime;
@@ -40,5 +40,15 @@ public class GlobalExceptionHandler {
         response.setErrorCode("FORBIDDEN");
         response.setTimestamp(LocalDateTime.now());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationFailException.class)
+    public ResponseEntity<ExceptionResponse> authFail(AuthenticationFailException ex)
+    {
+        ExceptionResponse resposne = new ExceptionResponse();
+        resposne.setErrorMessage("Failed to authenticate this token!\n" + ex.getMessage());
+        resposne.setErrorCode("UNAUTHORIZED");
+        resposne.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(resposne, HttpStatus.UNAUTHORIZED);
     }
 }

@@ -18,16 +18,14 @@ import javax.imageio.ImageIO;
 
 import org.imgscalr.Scalr;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-import lt.insoft.gallery.application.InternalException;
-import lt.insoft.gallery.application.ParameterFormatException;
-import lt.insoft.gallery.application.ResourceNotFoundException;
+import lt.insoft.gallery.application.exceptions.InternalException;
+import lt.insoft.gallery.application.exceptions.ParameterFormatException;
+import lt.insoft.gallery.application.exceptions.ResourceNotFoundException;
 import lt.insoft.gallery.domain.tag.TagService;
 
 @Service

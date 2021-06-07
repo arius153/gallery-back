@@ -22,8 +22,7 @@ import lt.insoft.gallery.domain.user.UserDTO;
 public class UserController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
+
 
     @PostMapping("/signup")
     public String signUp(@RequestBody UserDTO user) {
@@ -32,21 +31,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody UserDTO loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
 
-        return ResponseEntity.ok(JwtResponse.builder()
-                .token(jwt)
-                .expires(jwtUtils.getExpirationDate(jwt))
-                .roles(roles)
-                .build());
-
+        return userService.authenticateUser(loginRequest);
     }
 }

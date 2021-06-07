@@ -1,4 +1,4 @@
-package lt.insoft.gallery.application;
+package lt.insoft.gallery.application.exceptions;
 
 import java.time.LocalDateTime;
 

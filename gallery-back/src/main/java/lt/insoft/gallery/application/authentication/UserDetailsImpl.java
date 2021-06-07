@@ -1,4 +1,4 @@
-package lt.insoft.gallery.domain.authentication;
+package lt.insoft.gallery.application.authentication;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,9 +9,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lt.insoft.gallery.domain.user.UserEntity;
 
 @AllArgsConstructor
+@Getter
 public class UserDetailsImpl implements UserDetails {
 
     private Long id;
@@ -30,16 +32,6 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
     }
 
     @Override

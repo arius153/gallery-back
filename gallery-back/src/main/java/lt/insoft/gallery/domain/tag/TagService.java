@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lt.insoft.gallery.application.ResourceNotFoundException;
+import lt.insoft.gallery.application.exceptions.ResourceNotFoundException;
 import lt.insoft.gallery.domain.image.ImageDbRepository;
 import lt.insoft.gallery.domain.image.ImageEntity;
 

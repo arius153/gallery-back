@@ -49,7 +49,6 @@ public class ImageController {
 
 
     @GetMapping
-   // @PreAuthorize("hasRole('USER')")
     public List<ImageResposeDTO> getImages(@RequestParam(required = false) String searchParams) {
         return imageService.getImages(searchParams);
     }

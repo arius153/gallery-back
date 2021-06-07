@@ -1,4 +1,4 @@
-package lt.insoft.gallery.domain.authentication;
+package lt.insoft.gallery.domain.jwt;
 
 import java.util.Date;
 import java.util.List;

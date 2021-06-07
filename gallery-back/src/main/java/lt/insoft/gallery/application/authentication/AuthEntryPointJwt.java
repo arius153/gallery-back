@@ -1,4 +1,4 @@
-package lt.insoft.gallery.domain.authentication;
+package lt.insoft.gallery.application.authentication;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -14,13 +14,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
-
-
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         System.out.println("Unauthorized error: {}" + e.getMessage());
         httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
     }
-
 
 }

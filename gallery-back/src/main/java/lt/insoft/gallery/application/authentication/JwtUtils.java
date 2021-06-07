@@ -1,12 +1,10 @@
-package lt.insoft.gallery.domain.authentication;
-
+package lt.insoft.gallery.application.authentication;
 
 import java.util.Date;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,25 +12,41 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtils {
 
-    private String jwtSecret = "secret";
-    private int jwtExpirationMs = 1000 * 60 * 10;
+    @Value("${lt.insoft.jwtSecret}")
+    private String jwtSecret;
+    @Value("${lt.insoft.jwtExpiration}")
+    private int jwtExpirationMs;
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
-    }
-    public Date getExpirationDate(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getExpiration();
+        // @formatter:off
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        // @formatter:on
     }
 
+    public Date getExpirationDate(String token) {
+        // @formatter:off
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+        // @formatter:on
+    }
 
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        // @formatter:off
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+        // @formatter:on
     }
 
     public boolean validateJwtToken(String authToken) {
