@@ -8,8 +8,4 @@ public class GalleryBackApplication {
     public static void main(String[] args) {
         SpringApplication.run(GalleryBackApplication.class, args);
     }
-
-
-
-
 }
