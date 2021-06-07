@@ -7,6 +7,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,16 +49,19 @@ public class ImageController {
 
 
     @GetMapping
+   // @PreAuthorize("hasRole('USER')")
     public List<ImageResposeDTO> getImages(@RequestParam(required = false) String searchParams) {
         return imageService.getImages(searchParams);
     }
 
     @GetMapping(value = "/data/{imageId}")
+
     public ImageResposeDTO getFullImageInfo(@PathVariable("imageId") Long imageId) {
         return imageService.getFullImageInfo(imageId);
     }
 
     @DeleteMapping(value = "/{imageId}")
+
     public void deleteImage(@PathVariable("imageId") Long imageId) {
         imageService.deleteImage(imageId);
     }
