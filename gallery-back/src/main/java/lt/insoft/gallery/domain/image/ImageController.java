@@ -37,20 +37,18 @@ public class ImageController {
 
     @PostMapping
     Long uploadImage(@RequestPart MultipartFile image, @RequestPart ImageAddDTO imageAddDTO) {
-        System.out.println("Testinam is vetaines chebra");
-        System.out.println(imageAddDTO);
         return imageService.uploadImage(image, imageAddDTO);
     }
     @GetMapping(value = "/{imageId}", produces = MediaType.IMAGE_JPEG_VALUE)
     Resource downloadImage(@PathVariable Long imageId) {
-            byte[] image = imageService.downloadImage(imageId);
-            return new ByteArrayResource(image);
+        byte[] image = imageService.downloadImage(imageId);
+        return new ByteArrayResource(image);
     }
 
 
     @GetMapping
-    public List<ImageResposeDTO> getImages(@RequestParam(required = false) String searchParams) {
-        return imageService.getImages(searchParams);
+    public List<ImageResposeDTO> getImages(@RequestParam(required = false) String searchParams, @RequestParam(value = "page", defaultValue = "0") int page) {
+        return imageService.getImages(searchParams, page);
     }
 
     @GetMapping(value = "/data/{imageId}")
@@ -69,5 +67,11 @@ public class ImageController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyImage(@PathVariable("imageId") Long imageId, @RequestPart(required = false) MultipartFile image, @RequestPart ImageAddDTO imageModifyDTO) {
         imageService.modifyImage(imageId, imageModifyDTO, image);
+    }
+
+    @GetMapping(value = "/count")
+    public long getCount(@RequestParam(value = "searchParams", required = false) String searchParams)
+    {
+        return imageService.getCount(searchParams);
     }
 }

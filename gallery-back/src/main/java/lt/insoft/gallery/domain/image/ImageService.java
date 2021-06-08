@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 
 
 import org.imgscalr.Scalr;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,13 +54,13 @@ public class ImageService {
         try {
             // @formatter:off
             imageToSave = ImageEntity
-                .builder()
-                .content(image.getBytes())
-                .name(imageAddDto.getName())
-                .date(parsedDate)
-                .description(imageAddDto.getDescription())
-                .tags(new HashSet<>())
-                .build();
+                    .builder()
+                    .content(image.getBytes())
+                    .name(imageAddDto.getName())
+                    .date(parsedDate)
+                    .description(imageAddDto.getDescription())
+                    .tags(new HashSet<>())
+                    .build();
             // @formatter:on
         } catch (IOException e) {
             throw new InternalException("Could not get bytes from image file " + image.getOriginalFilename() + "\n" + e.getMessage());
@@ -137,10 +139,13 @@ public class ImageService {
 
     }
 
-    public List<ImageResposeDTO> getImages(String searchParams) {
-        List<ImageEntity> images = imageDbRepository.findAll();
+    public List<ImageResposeDTO> getImages(String searchParams, int page) {
+        List<ImageEntity> images;
+        Pageable pages = PageRequest.of(page, 12);
         if (searchParams != null && !searchParams.isEmpty()) {
-            images = imageDbRepository.findAll(Specification.where(ImageSpecification.search(searchParams)));
+            images = imageDbRepository.findAll(Specification.where(ImageSpecification.search(searchParams)), pages).toList();
+        } else {
+            images = imageDbRepository.findAll(pages).toList();
         }
         // @formatter:off
         return images.stream()
@@ -169,6 +174,14 @@ public class ImageService {
             throw new InternalException("Scaler thinks given bytes do not form an image!\n" + e.getMessage());
         }
 
+    }
+
+    public long getCount(String searchParams) {
+        if (searchParams != null && !searchParams.isEmpty())
+        {
+            return imageDbRepository.count(Specification.where(ImageSpecification.search(searchParams)));
+        }
+        return imageDbRepository.count();
     }
 
 }

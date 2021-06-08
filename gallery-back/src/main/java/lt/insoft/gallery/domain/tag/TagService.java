@@ -1,5 +1,6 @@
 package lt.insoft.gallery.domain.tag;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +26,17 @@ public class TagService {
         ImageEntity image = imageDbRepository.findById(imageId).orElseThrow(() -> new ResourceNotFoundException(ImageEntity.class, "imageId", imageId.toString()));
         image.getTags().clear();
 
-        for (String tag : tags) {
+        List<TagEntity> tagsFromDb = tagRepository.findByTextIn(tags);
+        List<String> tagTextsFromDb = tagsFromDb.stream().map(TagEntity::getText).collect(Collectors.toList());
+        tags.removeAll(tagTextsFromDb);
+        List<TagEntity> newTags = new ArrayList<>();
 
-            TagEntity tagFromDb = tagRepository.findFirstByText(tag);
-            if (tagFromDb == null) {
-                tagFromDb = tagRepository.save(TagEntity.builder().text(tag).images(new HashSet<>()).build());
-            }
-            image.getTags().add(tagFromDb);
-            tagFromDb.getImages().add(image);
+        for (String tag : tags) {
+            newTags.add(TagEntity.builder().text(tag).images(new HashSet<>()).build());
         }
+        tagRepository.saveAll(newTags);
+        tagsFromDb.addAll(newTags);
+        image.getTags().addAll(tagsFromDb);
     }
 
     // public List<TagDTO> getTags()
