@@ -1,15 +1,9 @@
 package lt.insoft.gallery.application.authentication;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -17,8 +11,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +27,8 @@ public class JwtUtils {
 
     @Value("${lt.insoft.jwtExpiration}")
     private int jwtExpirationMs;
-    private PrivateKey privateKey = generatePrivateKey();
-    private PublicKey publicKey = generatePublicKey();
+    private final PrivateKey privateKey = generatePrivateKey();
+    private final PublicKey publicKey = generatePublicKey();
 
     public String getUserNameFromJwtToken(String token) {
         // @formatter:off
@@ -81,9 +74,8 @@ public class JwtUtils {
 
     private PublicKey generatePublicKey() {
         try {
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            Base64 decodes = new Base64();
             byte[] encodedPublicKey = Files.readAllBytes(Paths.get("public_key.der"));
+            KeyFactory kf = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec spec = new X509EncodedKeySpec(encodedPublicKey);
             return kf.generatePublic(spec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
