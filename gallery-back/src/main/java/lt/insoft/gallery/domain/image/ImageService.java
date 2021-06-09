@@ -56,6 +56,7 @@ public class ImageService {
             imageToSave = ImageEntity
                     .builder()
                     .content(image.getBytes())
+                    .scaledContent(scaleImage(image.getBytes()))
                     .name(imageAddDto.getName())
                     .date(parsedDate)
                     .description(imageAddDto.getDescription())
@@ -149,11 +150,11 @@ public class ImageService {
         }
         // @formatter:off
         return images.stream()
-                .peek(image -> image.setContent(scaleImage(image.getContent())))
+
                 .map(image -> ImageResposeDTO
                         .builder()
                         .id(image.getId())
-                        .content(image.getContent())
+                        .content(image.getScaledContent())
                         .date(image.getDate())
                         .name(image.getName())
                         .description(image.getDescription())
@@ -167,7 +168,7 @@ public class ImageService {
         BufferedImage imagetoResize;
         try (InputStream is = new ByteArrayInputStream(image); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             imagetoResize = ImageIO.read(is);
-            imagetoResize = Scalr.resize(imagetoResize, Scalr.Method.SPEED, 300);
+            imagetoResize = Scalr.resize(imagetoResize, Scalr.Method.QUALITY, 300);
             ImageIO.write(imagetoResize, "png", baos);
             return baos.toByteArray();
         } catch (IOException | IllegalArgumentException e) {

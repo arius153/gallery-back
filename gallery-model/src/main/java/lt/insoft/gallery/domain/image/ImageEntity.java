@@ -35,6 +35,8 @@ public class ImageEntity {
 
     @Lob
     private byte[] content;
+    @Lob
+    private byte[] scaledContent;
     private String name;
     private LocalDate date;
     private String description;
