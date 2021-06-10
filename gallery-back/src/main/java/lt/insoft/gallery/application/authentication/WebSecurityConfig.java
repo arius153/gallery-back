@@ -3,6 +3,7 @@ package lt.insoft.gallery.application.authentication;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -50,7 +51,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)).and()
                 .authorizeRequests().antMatchers("/images").hasRole("USER")
-                .antMatchers("/images/data/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/images/**").hasRole("ADMIN")
+                .antMatchers("/images/data/**").hasRole("USER")
+                .antMatchers("/images/**").hasRole("USER")
+                .antMatchers("/authentication/forbidden").hasRole("ADMIN")
                 .anyRequest().permitAll().and()
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         // @formatter:on

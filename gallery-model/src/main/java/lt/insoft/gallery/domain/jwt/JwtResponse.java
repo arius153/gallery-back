@@ -1,5 +1,6 @@
 package lt.insoft.gallery.domain.jwt;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Setter
 public class JwtResponse {
     private String token;
+    private String refreshToken;
     private Date expires;
     private List<String> roles;
 }

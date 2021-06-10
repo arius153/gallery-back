@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lt.insoft.gallery.application.exceptions.InternalException;
@@ -56,10 +57,21 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
+                //.setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
+                .setExpiration(new Date(new Date().getTime() + 15000))
                 .signWith(SignatureAlgorithm.RS512, privateKey)
                 .compact();
         // @formatter:on
+    }
+
+    public String refreshJwtToken(String authToken) {
+        Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(authToken).getBody();
+        return Jwts.builder()
+                .setSubject(claims.getSubject())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
+                .signWith(SignatureAlgorithm.RS512, privateKey)
+                .compact();
     }
 
     public boolean validateJwtToken(String authToken) {
