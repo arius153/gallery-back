@@ -47,7 +47,7 @@ public class UserService {
     private final RefreshRepository refreshRepository;
 
     public String registerNewUser(UserDTO signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername()))
+        if (userRepository.findByUsername(signUpRequest.getUsername()).isPresent())
         {
             return "Error: username is already taken!";
         }
@@ -111,5 +111,10 @@ public class UserService {
     @Transactional
     public void logOut(LogOutDTO logOutDTO) {
         refreshRepository.deleteByToken(logOutDTO.getRefreshToken());
+    }
+
+    public boolean isUsernameTaken(String username) {
+        boolean isTaken = userRepository.existsByUsername(username);
+        return isTaken;
     }
 }

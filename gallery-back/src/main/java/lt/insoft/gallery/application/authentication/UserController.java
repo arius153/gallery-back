@@ -41,4 +41,8 @@ public class UserController {
     {
         userService.logOut(logOutDTO);
     }
+    @PostMapping("/checkUser")
+    public boolean isUsernameTaken(@RequestBody String username) {
+        return userService.isUsernameTaken(username);
+    }
 }
