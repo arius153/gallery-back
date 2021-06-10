@@ -1,6 +1,7 @@
 package lt.insoft.gallery.application.authentication;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;

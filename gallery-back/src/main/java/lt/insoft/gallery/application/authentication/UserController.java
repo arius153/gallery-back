@@ -41,10 +41,4 @@ public class UserController {
     {
         userService.logOut(logOutDTO);
     }
-    @GetMapping("/forbidden")
-    public void hmm()
-    {
-
-    }
-
 }

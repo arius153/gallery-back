@@ -54,7 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE,"/images/**").hasRole("ADMIN")
                 .antMatchers("/images/data/**").hasRole("USER")
                 .antMatchers("/images/**").hasRole("USER")
-                .antMatchers("/authentication/forbidden").hasRole("ADMIN")
                 .anyRequest().permitAll().and()
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         // @formatter:on

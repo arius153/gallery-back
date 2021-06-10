@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lt.insoft.gallery.application.exceptions.InternalException;
@@ -65,9 +66,15 @@ public class JwtUtils {
     }
 
     public String refreshJwtToken(String authToken) {
-        Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(authToken).getBody();
+        String subject;
+        try {
+            subject = getUserNameFromJwtToken(authToken);
+        } catch (ExpiredJwtException e)
+        {
+            subject = e.getClaims().getSubject();
+        }
         return Jwts.builder()
-                .setSubject(claims.getSubject())
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.RS512, privateKey)
