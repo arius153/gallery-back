@@ -95,7 +95,7 @@ public class UserService {
         if (oldRefreshToken.getExpirationDate().isBefore(LocalDateTime.now()))
         {
             refreshRepository.delete(oldRefreshToken);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is expired!");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Refresh token is expired!");
         }
         refreshRepository.delete(oldRefreshToken);
         String jwt = jwtUtils.refreshJwtToken(refreshDTO.getJwt());
