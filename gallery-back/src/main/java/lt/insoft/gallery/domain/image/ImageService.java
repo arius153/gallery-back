@@ -68,8 +68,15 @@ public class ImageService {
         }
 
         Long id = imageDbRepository.save(imageToSave).getId();
-        tagService.addTags(id, imageAddDto.getTags());
-        return id;
+        if (imageAddDto.getTags() == null)
+        {
+            return id;
+        } else {
+            tagService.addTags(id, imageAddDto.getTags());
+
+            return id;
+        }
+
     }
 
     public byte[] downloadImage(Long imageId) {
@@ -146,7 +153,8 @@ public class ImageService {
         if (searchParams != null && !searchParams.isEmpty()) {
             images = imageDbRepository.findAll(Specification.where(ImageSpecification.search(searchParams)), pages).toList();
         } else {
-            images = imageDbRepository.findAll(pages).toList();
+           // images = imageDbRepository.findAll(pages).toList();
+            images = imageDbRepository.findAllByOrderByIdDesc(pages).toList();
         }
         // @formatter:off
         return images.stream()

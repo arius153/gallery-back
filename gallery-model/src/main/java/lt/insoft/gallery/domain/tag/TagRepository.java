@@ -7,6 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TagRepository extends JpaRepository<TagEntity, Long> {
-    TagEntity findFirstByText(String text);
     List<TagEntity> findByTextIn(List<String> tags);
 }

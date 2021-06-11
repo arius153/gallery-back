@@ -1,6 +1,5 @@
 package lt.insoft.gallery.domain.refresh;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;

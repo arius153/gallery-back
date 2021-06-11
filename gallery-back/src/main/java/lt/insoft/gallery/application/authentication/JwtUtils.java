@@ -13,12 +13,11 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -59,7 +58,7 @@ public class JwtUtils {
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 //.setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
-                .setExpiration(new Date(new Date().getTime() + 15000))
+                .setExpiration(new Date(new Date().getTime() + 300000))
                 .signWith(SignatureAlgorithm.RS512, privateKey)
                 .compact();
         // @formatter:on
@@ -76,7 +75,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + 15000))
+                .setExpiration(new Date(new Date().getTime() + 300000))
                 .signWith(SignatureAlgorithm.RS512, privateKey)
                 .compact();
     }
